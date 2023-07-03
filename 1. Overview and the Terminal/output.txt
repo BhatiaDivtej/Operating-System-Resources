@@ -1,0 +1,44 @@
+# Simply copy and paste the output from your terminal here!
+
+The 5 Simple Commands and their result is copied from terminal below:
+
+
+1.
+-bash-4.2$ pwd
+
+/home/dsbhatia/.ssh
+
+2.
+-bash-4.2$ ls
+
+agent-environment  id_ed25519  id_ed25519.pub  known_hosts  lab01-dsbhatia
+
+3.
+-bash-4.2$ mkdir Sample
+-bash-4.2$ ls -l
+
+total 24
+drwxr-xr-x. 2 dsbhatia majors 4096 Jan 18 13:54 Sample
+-rw-------. 1 dsbhatia majors  140 Jan 17 23:15 agent-environment
+-rw-------. 1 dsbhatia majors  464 Jan 17 22:53 id_ed25519
+-rw-r--r--. 1 dsbhatia majors  109 Jan 17 22:53 id_ed25519.pub
+-rw-r--r--. 1 dsbhatia majors  206 Jan 17 23:25 known_hosts
+drwxr-xr-x. 5 dsbhatia majors 4096 Jan 17 23:37 lab01-dsbhatia
+
+4.
+-bash-4.2$ rm -r Sample
+
+-bash-4.2$ ls 
+
+agent-environment  id_ed25519  id_ed25519.pub  known_hosts  lab01-dsbhatia
+-bash-4.2$ 
+
+
+5.
+-bash-4.2$ ps
+
+   PID TTY          TIME CMD
+128950 pts/215  00:00:00 bash
+134786 pts/215  00:00:00 ps
+
+
