@@ -1,4 +1,4 @@
-# Tools of the Trade: GDB
+# Tools of the Trade: GDB (Debugging)
 
 In this lab, we'll experiment with an interesting tool that is useful in the development cycle of Assembly (and C) programs: [GDB](https://www.gnu.org/software/gdb/).
 
