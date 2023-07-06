@@ -1,7 +1,5 @@
 # The Process API
 
-**Note: There's a checklist quiz on Canvas for this lab: <https://northeastern.instructure.com/courses/133161/assignments/1767489>**
-
 In this lab, we are going to explore the C process API to get familiar with launching processes from within our program. Provided in this lab are several code examples showcasing several ways to launch and control processes. Today's lab will introduce you to 'multiprocessing' and some of the problems that can come along with it.
 
 While submissions for this lab are individual, feel free to partner up for work and discussion.
