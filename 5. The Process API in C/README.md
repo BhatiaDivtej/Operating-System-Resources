@@ -8,7 +8,7 @@ While submissions for this lab are individual, feel free to partner up for work 
 
 ![#f03c15](https://via.placeholder.com/15/f03c15/f03c15.png) **This lab is to be worked on in your VM.** If you have a local Linux environment (a physical machine or a VM, such as VirtualBox or VMware), you can use that one too.
 
-Do not work on `login.khoury.northeastern.edu`.
+
 
 ---
 
