@@ -1,6 +1,5 @@
 # POSIX File I/O, or: (Almost) Everything is a File  
 
-**There's a checklist quiz on Canvas for this lab: <https://northeastern.instructure.com/courses/133161/quizzes/498049>**  
 
 In today's lab, we will experiment with the [POSIX](https://pubs.opengroup.org/onlinepubs/9699919799/) API for file operations. On Linux, these functions are implemented in terms of system calls, which you might have used when programming in assembly. When using these routines, files are represented using numerical *file descriptors*, that is, integer values `>= 0`. Since, in UNIX-like systems, everything is a file, knowing how to use these functions will give you access to more than just traditional files. This lab contains several examples that will take you from reading and writing from standard input and output, to basics of inter-process communication.
 
