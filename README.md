@@ -1,54 +1,200 @@
-# Operating Systems Learning Repository
+# Memory Allocators
 
-Welcome to the Operating Systems Learning Repository! This repository contains a collection of tasks that can help you enhance your understanding of Operating Systems and Linux. Feel free to explore the tasks and try to complete them to get hands-on learning experience about OS.
+In this week's lab, you are going to start getting familiar with some of the tools used to implement a memory allocator. A memory allocator in the C programming language is, more broadly, '*a set of functions that support requests to allocate or deallocate memory*.' 
 
-## Table of Contents
+Remember, part of this class is building a concrete mental model of what is really going on inside of a machine (so that there is "no more magic" when you see a computer running). We have looked at how memory is managed by the operating system and hardware, launching processes (with fork and exec), understanding a process' memory space, and now allocating memory.
 
-- [Introduction](#introduction)
-- [Tasks](#tasks)
-- [Contributing](#contributing)
-- [License](#license)
+**Even though this lab is to be submitted individually, feel free to partner up and discuss the lab content with some of your classmates privately.**
 
-## Introduction
+## Logistics
 
-Operating Systems (OS) form the foundation of modern computing systems. They manage computer hardware and software resources, provide an interface between the user and the computer, and ensure the proper execution of programs. Learning about operating systems is essential for anyone interested in computer science or software development.
+For this lab,  use your XOA VM to complete and test your work. The examples I provide below are designed strictly for 64-bit Linux. There is an associated quiz on Canvas: <https://northeastern.instructure.com/courses/133161/quizzes/499062>.
 
-This repository aims to provide a collection of tasks that can help you learn and practice various concepts related to operating systems and Linux. Each task focuses on a specific topic or skill, providing you with a practical way to enhance your understanding.
+## Part 1 - Brief Recap on using malloc, calloc, and free
 
-## Tasks
+Let's first refresh on how to use our current memory allocator which lives in [stdlib.h](http://www.unix.org/version2/sample/stdlib.h.html). Below is an example of using some of the functions. If you feel confident about your malloc-fu, feel free to skip ahead.
 
-The repository contains the following tasks:
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
 
-1. **Task 1:** Introduction to Linux
-   - Description: Get started with Linux by installing a Linux distribution of your choice and performing basic operations such as navigating the file system, creating files and directories, and running commands.
-   - Difficulty: Beginner
+int main(int argc, char **argv) {
+  /* Dynamically allocate some amount of memory */
+  char *message = (char *) malloc(sizeof(char) * 12);
 
-2. **Task 2:** Process Management
-   - Description: Explore the concepts of processes in an operating system, including process creation, termination, and management. Learn how to use process-related commands and utilities in Linux.
-   - Difficulty: Intermediate
+  /* Check if memory allocation failed (i.e. we do not have enough bytes */
+  if (NULL == message) {
+    printf("Allocation failed\n");
+    exit(0);
+  }
 
-3. **Task 3:** Memory Management
-   - Description: Dive into the world of memory management in operating systems. Learn about virtual memory, memory allocation, and deallocation techniques, and practice using memory management utilities in Linux.
-   - Difficulty: Intermediate
+  /* If it did not fail, then copy a string into our allocated memory.
+   * Function signature: char *strcpy(char *dest, const char *src); 
+   */
+  strcpy(message, "Hello, Bob\n");
 
-4. **Task 4:** File System Management
-   - Description: Gain knowledge about file systems and their management. Learn about file system types, file permissions, disk partitions, and various file operations in Linux.
-   - Difficulty: Intermediate
+  printf("%s", message);
 
-5. **Task 5:** Scheduling Algorithms
-   - Description: Understand the different scheduling algorithms used by operating systems to manage and allocate CPU resources. Implement and compare various scheduling algorithms in a simulated environment.
-   - Difficulty: Advanced
+  /* Lets now free our memory */
+  free(message);
 
-6. **Task 6:** Interprocess Communication
-   - Description: Explore methods and mechanisms for interprocess communication in operating systems. Learn about pipes, message queues, shared memory, and sockets, and implement simple communication scenarios.
-   - Difficulty: Advanced
+  /* If we are working with data, it can sometimes be nice to zero everything 
+   * out. You'll notice the parameters are a little flipped here. This is asking
+   * for '57' blocks of memory that are the sizeof(int). So we are getting 57 
+   * sizeof(int) pieces of memory). 
+   */
+  int *numberData = (int *) calloc(57, sizeof(int));
+  int i;
 
-Feel free to choose a task that aligns with your current knowledge and skill level. Each task directory contains a README file with detailed instructions and additional resources to guide you through the task.
+  /* Let's confirm it is all zeroed out memory */
+  for (i = 0; i < 57; ++i) {
+    assert(numberData[i] == 0);
+    printf("%d ", numberData[i]);
+  }
+  printf("\n");
 
-## Contributing
+  /* Lets free our data */
+  free(numberData);
 
-If you have additional tasks, improvements, or suggestions for this repository, contributions are welcome! Please follow the guidelines in the [CONTRIBUTING.md](CONTRIBUTING.md) file for details on how to contribute.
+  return 0;
+}
+```
 
-## License
+## Part 2 - Background Reading on Memory Allocators
 
-This repository is licensed under the [MIT License](LICENSE). Feel free to use, modify, and distribute the contents of this repository for personal and educational purposes.
+
+Go through the slides on [Dynamic Allocation](DynamicAllocation.pdf) and ask questions if something isn't clear.
+
+Take a moment to read [Cexcerpt.pdf](Cexcerpt.pdf) (2 pages ~5 minutes reading) to get a basic understanding of how allocators work. 
+
+
+
+## Part 3 - Allocator building blocks
+
+A few of the key system calls that we will need to understand are the following. Read the man pages and ask for clarification if you are struggling to understand some part of them.
+
+
+* Type in `man 2 sbrk` in the terminal. Read the description of what sbrk does .
+
+```
+BRK(2)                                                 Linux Programmer's Manual
+
+NAME
+       brk, sbrk - change data segment size
+
+```
+
+* Type in `man 2 mmap` in the terminal next.
+
+```
+MMAP(2)                                                Linux Programmer's Manual
+
+NAME
+       mmap, munmap - map or unmap files or devices into memory
+```
+
+* Type in `man 2 mlock` next.
+
+```
+MLOCK(2)                                               Linux Programmer's Manual
+
+NAME
+       mlock, mlock2, munlock, mlockall, munlockall - lock and unlock memory
+```
+
+The lab includes two example programs using `mmap` to map a file into memory. Read the source, paying attention to what's happening (keep your `mmap` manpage open). [`save_array.c`](save_array.c) maps a file into memory as an array of numbers and populates the array. On the other hand, [`print_array.c`](print_array.c) maps the same file into memory and prints the numbers one by one. Compile them and run `./save_array` first, then `./print_array`. After running the first, a file should be appear, called `array.mem`. If you open the file, you will see some random looking characters. Try opening the file in hex mode with an appropriate program (try `man -k hex | grep dump`). One method is `hexdump array.mem`. If you look at the hex decoding of the contents, you might recognize the individual numbers written into the array by `save_array`.  See `man hexdump` for other switches to control the format of the output.  You may find one that is easier to read. 
+
+Discuss with your neighbor: 
+
+1. What do you think `mlock` is good for? This article discusses some of the trade-offs nicely: <https://eklitzke.org/mlock-and-mlockall>
+
+2. How could you use `mmap` as a replacement for `malloc`: what flags would you use, how would you free the memory?
+
+**Write a 1-2 sentence answer for each in the [quiz](https://northeastern.instructure.com/courses/133161/quizzes/499062).**
+
+## Part 4 - The simplest memory allocator (sbrk.c)
+
+We can actually write a very simple implementation of a memory allocator. The allocator below  gives us however many bytes of memory requested. 
+
+```c
+// sbrk.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+void *mymalloc(size_t size) {
+  void *ptr = sbrk(size);
+  if (ptr == (void *) -1) {
+    return NULL;
+  }
+
+  return ptr;
+}
+
+void setupProgram() {
+  // Memory leak! But why?
+  mymalloc(2);
+  mymalloc(4);
+  mymalloc(8);
+  mymalloc(16);
+  mymalloc(32);
+  mymalloc(64);
+  mymalloc(128);
+  mymalloc(256);
+}
+
+int main(int argc, char **argv) {
+
+  setupProgram();
+
+  return 0;
+}
+```
+
+However, the problem with this allocator is that we do not have any notion over where that memory is. We also do not really know how much memory needs to be freed(or rather, could be reused rather than asking for more memory). This means we need some sort of data structure to keep track of our heap size.
+
+**Discuss** with your neighbor or partner: 
+
+1. What data structures might you use to keep track of memory? Record at least one, but try to think of at least two in your discussion.
+
+2. Do you think you will be able to use `valgrind` to monitor your custom memory allocator to detect potential memory leaks? 
+
+**Write a 1-2 sentence answer for each in the [quiz](https://northeastern.instructure.com/courses/133161/quizzes/499062).** 
+
+## Part 5 - strace
+
+Create **sbrk.c** using the code from Part 4.  Compile sbrk.c using `gcc -g sbrk.c -o sbrk`.  Run `strace ./sbrk`
+
+[strace](https://linux.die.net/man/1/strace) is a program that intercepts system calls. You should be able to directly see where `sbrk` for instance has been called. Take a few moments to read the man pages.
+
+```
+STRACE(1)                                                General Commands Manual
+
+NAME
+       strace - trace system calls and signals
+
+DESCRIPTION
+       In the simplest case strace runs the specified command until it exits.
+       It intercepts and records the system calls which are called  by
+       a  process  and  the  signals  which  are  received by a process.  The
+       name of each system call, its arguments and its return value are printed
+       on standard error or to the file specified with the -o option.
+```
+
+**Discuss** with your neighbor how many `sbrk` system calls you see (they will show up as 'brk'), and write your answer below.
+
+**Write a 1-2 sentence answer in the [quiz](https://northeastern.instructure.com/courses/133161/quizzes/499062).**
+
+## Deliverables
+
+1. Complete the Lab 7 quiz on Canvas: <https://northeastern.instructure.com/courses/133161/quizzes/499062> 
+2. Check in and commit [sbrk.c](./sbrk.c)  to your repository.
+3. Submit your repo to Gradescope.
+
+## Going Further
+
+* Take a look at [malloc.c](https://code.woboq.org/userspace/glibc/malloc/malloc.c.html). You can skim around and read some of the comments to see how the libc library performs memory allocation!
+* Another nice resource is the GNU C Allocator described in great detail here: <https://www.gnu.org/software/libc/manual/html_node/Memory-Allocation.html>
