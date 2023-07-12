@@ -1,8 +1,5 @@
 # Condition Variables and Semaphores
 
-This lab is optional, provided as a set of exercises for you.
-
-**Even though this lab is to be submitted individually, feel free to partner up and discuss the lab content with your partner.**
 
 ## Task 0 - Adding the POSIX man pages to your VM (DO NOT SKIP)
 
