@@ -1,4 +1,4 @@
-# Lab 10 xv6
+# xv6
 
 <img src="./media/unix-logo.png" alt="Unix operating systems" width="400px" align="right"> In today's lab we are going to  explore and work in the [xv6 operating system](https://en.wikipedia.org/wiki/Xv6). This is a modern reimplementation of the 6th edition of the Unix operating system (which was originally released in 1975) for a modern multiprocessor system. It has a manageable size to work with in a lab (The actual [Linux Kernel is several millions lines of code](https://unix.stackexchange.com/questions/223746/why-is-the-linux-kernel-15-million-lines-of-code)!). That being said, this is still a large piece of software, and getting experience working with mid to large sized source code you are not familiar with is an important skill!
 
@@ -12,7 +12,6 @@ The tasks for today's lab are:
 
 For today's lab, you will be running xv6 on your personal machine. Please see the [InstallationInstructions.md](./InstallationInstructions.md) to install and run xv6 in the QEMU emulator for your operating system. 
 
-**DO NOT DOWNLOAD xv6 INTO THE LAB 10 REPOSITORY!!** 
 
 # Part 2 - Getting familiar with xv6
 
@@ -227,7 +226,7 @@ Okay, now we just need to make a program that uses our syscall.
 * Note: Sometimes naming things "weirdly" will make them easier to grep for when first learning. 
 * Note: If things did not work for you, or if something is really messed up, just download xv6 again and start from the begining.
 
-## Lab Deliverable
+## Deliverable
 - Respond to the discussion prompts in <notes.md>. 
 - Implement the syscall 'myname' 
     - Commit `myname.c`, `mycommand.c` and your `Makefile` to the repository.
