@@ -1,4 +1,4 @@
-# Operating Systems Learning Repository
+# Operating Systems Learning Material
 
 Welcome to the Operating Systems Learning Repository! This repository contains a collection of tasks that can help you enhance your understanding of Operating Systems and Linux. Feel free to explore the tasks and try to complete them to get hands-on learning experience about OS.
 
